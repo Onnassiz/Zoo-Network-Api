@@ -8,12 +8,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 
-@Path("/fetchAnimalLinks")
+@Path("/fetchAnimalImageLinks")
 public class FetchAnimalLinks {
     @GET
     public Response fetchAnimalLinks(){
         Gson gson = new Gson();
-        ArrayList<AnimalLink> animalLinks = AnimalServices.getInstance().fetchAnimalLinks();
-        return Response.ok(gson.toJson(animalLinks)).build();
+        ArrayList<AnimalImageLink> animalImageLinks = AnimalServices.getInstance().fetchAnimalImageLinks();
+        return Response.ok(gson.toJson(animalImageLinks)).build();
     }
 }

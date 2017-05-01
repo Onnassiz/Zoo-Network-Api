@@ -1,7 +1,7 @@
 package com.models;
 
 
-public class ZooLink {
+public class ZooImageLink {
     private String zoo_name;
     private String link;
 

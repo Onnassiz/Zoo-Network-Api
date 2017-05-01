@@ -16,7 +16,6 @@ public class JWTServices {
     private static JWTServices jwtServices = null;
     private static String token = null;
     private static Boolean isValid = false;
-    private static String email_Cliam = null;
 
     private JWTServices(){
 
@@ -29,6 +28,7 @@ public class JWTServices {
         return jwtServices;
     }
 
+    //Generate json web token
     public String generateJsonWT(String email, String first_name, String last_name){
         long ONE_MINUTE_IN_MILLIS=60000;//millisecs
         Calendar date = Calendar.getInstance();
@@ -51,6 +51,7 @@ public class JWTServices {
         return token;
     }
 
+    //Verify Json web Token
     public Boolean verifyJsonWT(String thisToken){
         try {
             Algorithm algorithm = Algorithm.HMAC256("waid2");
@@ -65,21 +66,5 @@ public class JWTServices {
             isValid = false;
         }
         return isValid;
-    }
-
-    public String getEmailClaim(String thisToken){
-        try {
-            Algorithm algorithm = Algorithm.HMAC256("waid2");
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("auth0")
-                    .build();
-            DecodedJWT jwt = verifier.verify(thisToken);
-            email_Cliam = jwt.getClaim("email").asString();
-        } catch (UnsupportedEncodingException exception){
-
-        } catch (JWTVerificationException exception){
-
-        }
-        return email_Cliam;
     }
 }

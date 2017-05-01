@@ -50,7 +50,7 @@ public class AnimalServices {
         Util.getInstance().createRecordSQL(sql, params);
     }
 
-    //Map Resultset to Animal class
+    //Map ResultSet to Animal class
     private Animal mapRSToAnimals(ResultSet rs)
     {
         try
@@ -105,7 +105,8 @@ public class AnimalServices {
         return Util.getInstance().getIdSQL(sql, common_name);
     }
 
-    public void saveZooImageLink(JSONObject jsonParams){
+    //Save animal Image link
+    public void saveAnimalImageLink(JSONObject jsonParams){
         String sql = "insert into animal_images value (?, ?, ?)";
         JSONArray params = new JSONArray();
         params.add(0, null);
@@ -114,13 +115,14 @@ public class AnimalServices {
         Util.getInstance().createRecordSQL(sql, params);
     }
 
-    private AnimalLink mapRsToAnimalLink(ResultSet rs){
+    //Map result set to Animal Image Link Class
+    private AnimalImageLink mapRsToAnimalLink(ResultSet rs){
         try
         {
-            AnimalLink animalLink = new AnimalLink();
-            animalLink.setCommon_name(rs.getString("common_name"));
-            animalLink.setLink(rs.getString("link"));
-            return animalLink;
+            AnimalImageLink animalImageLink = new AnimalImageLink();
+            animalImageLink.setCommon_name(rs.getString("common_name"));
+            animalImageLink.setLink(rs.getString("link"));
+            return animalImageLink;
         }
         catch (Exception e)
         {
@@ -128,6 +130,7 @@ public class AnimalServices {
         }
     }
 
+    //Map result set to AnimalZoo class
     private AnimalZoo mapRsToAnimalZoos(ResultSet rs){
         try
         {
@@ -143,24 +146,26 @@ public class AnimalServices {
         }
     }
 
-    private ArrayList<AnimalLink> fetchAnimalLinksSQL(String sql){
-        ArrayList<AnimalLink> animalLinks = new ArrayList();
+    //Execute Fetch Link SQL
+    private ArrayList<AnimalImageLink> fetchAnimalImageLinksSQL(String sql){
+        ArrayList<AnimalImageLink> animalImageLinks = new ArrayList();
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()){
-                animalLinks.add(mapRsToAnimalLink(rs));
+                animalImageLinks.add(mapRsToAnimalLink(rs));
             }
         }catch (Exception ex){
         }
-        return animalLinks;
+        return animalImageLinks;
     }
 
-    public ArrayList<AnimalLink> fetchAnimalLinks(){
+    //Retrieve the image links of a particular animal
+    public ArrayList<AnimalImageLink> fetchAnimalImageLinks(){
         String sql = "select animal_images.link as 'link', animals.common_name as 'common_name' from animals inner join animal_images on animal_images.animal_id = animals.id";
-        return fetchAnimalLinksSQL(sql);
+        return fetchAnimalImageLinksSQL(sql);
     }
 
     private ArrayList<AnimalZoo> fetchAnimalZoosSQL(String sql, String common_name){
@@ -179,17 +184,20 @@ public class AnimalServices {
         return animalZoos;
     }
 
+    //Get the zoos of a particular animal
     public ArrayList<AnimalZoo> fetchAnimalZoos(String common_name){
         String sql = "SELECT animals.common_name AS 'common_name', zoos.zoo_name AS 'zoo_name', animals_in_zoos.animal_count as 'animal_count' FROM zoos INNER JOIN animals_in_zoos ON zoos.id = animals_in_zoos.zoo_id INNER JOIN animals ON animals_in_zoos.animal_id = animals.id WHERE animals.common_name = ?";
         return fetchAnimalZoosSQL(sql, common_name);
     }
 
+    //Clear the Image link of a particular animal
     public void deleteAnimalImages(String common_name){
         int id = getAnimalId(common_name);
         String sql = "delete from animal_images where animal_id = ?";
         ZooServices.getInstance().deleteZooImagesSQL(sql, id);
     }
 
+    //Execute checkTag SQL
     private Boolean checkTagExistsSQL(String sql, int animal_id, int zoo_id){
         Boolean exists = false;
         try {
@@ -205,11 +213,13 @@ public class AnimalServices {
         return exists;
     }
 
+    //Check if a selected animal has been tagged to a selected zoo
     private Boolean checkTagExists(int animal_id, int zoo_id){
         String sql = "select * from animals_in_zoos where animal_id = ? and zoo_id = ?";
         return checkTagExistsSQL(sql, animal_id, zoo_id);
     }
 
+    //Tag an animal to a zoo
     public void addAnimalZooTag(JSONObject jsonParams){
         int zoo_id = ZooServices.getInstance().getZooId(jsonParams.get("zoo_name").toString());
         int animal_id = getAnimalId(jsonParams.get("common_name").toString());
@@ -235,6 +245,7 @@ public class AnimalServices {
         }
     }
 
+    //Delete animal zoo Tag
     public void deleteZooTag(String common_name, String zoo_name){
         int animal_id = getAnimalId(common_name);
         int zoo_id = ZooServices.getInstance().getZooId(zoo_name);
@@ -246,6 +257,7 @@ public class AnimalServices {
         Util.getInstance().createRecordSQL(sql, params);
     }
 
+    //Prepare all search keys and add all keys to a jsonArray
     public JSONArray getSearchKeys(){
         ArrayList<Animal> animals = fetchAllAnimals();
         JSONArray keys = new JSONArray();
@@ -272,6 +284,7 @@ public class AnimalServices {
         return keys;
     }
 
+    //Execute search Animal by key
     public ArrayList<Animal> searchAnimalByKeySQL(String sql, String key){
         ArrayList<Animal> animals = new ArrayList();
         try {
@@ -290,6 +303,7 @@ public class AnimalServices {
         return animals;
     }
 
+    //Search animal using a specified search key
     public ArrayList<Animal> searchAnimalByKey(String key){
         key = "%"+key.trim()+"%";
         String sql = "select * from animals where ( (common_name like ?) or (family like ?) or (animal_order like ?) or (animal_class like ?) or (species like ?) or (genus like ?) )";

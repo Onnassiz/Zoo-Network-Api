@@ -2,7 +2,6 @@ package com.controllers;
 
 import com.google.gson.Gson;
 import com.models.AnimalServices;
-import com.models.ZooServices;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -34,7 +33,7 @@ public class SaveAnimalImage {
         }
 
         //Save Image Link
-        AnimalServices.getInstance().saveZooImageLink(jsonParams);
+        AnimalServices.getInstance().saveAnimalImageLink(jsonParams);
         return Response.ok().build();
     }
 }
