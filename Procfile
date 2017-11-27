@@ -1,1 +1,1 @@
-web: java -jar target/waid2-server.jar
+web: java -jar target/waid2-server.war
