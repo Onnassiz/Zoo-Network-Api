@@ -9,7 +9,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("createAdminAccount")
+@Path("/createAdminAccount")
 public class CreateAdminAccount {
     @POST
     @Produces(MediaType.APPLICATION_JSON)

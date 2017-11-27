@@ -56,4 +56,5 @@ public class Zoo {
     public void setPostcode(String postcode) {
         this.postcode = postcode;
     }
+
 }

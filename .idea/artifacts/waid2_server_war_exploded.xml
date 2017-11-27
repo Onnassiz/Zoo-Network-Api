@@ -41,6 +41,7 @@
           <element id="library" level="project" name="Maven: javax.mail:mailapi:1.4.3" />
           <element id="library" level="project" name="Maven: net.sf.jopt-simple:jopt-simple:4.6" />
           <element id="library" level="project" name="Maven: mysql:mysql-connector-java:6.0.6" />
+          <element id="library" level="project" name="Maven: org.postgresql:postgresql:9.4.1212" />
           <element id="library" level="project" name="Maven: com.auth0:java-jwt:3.1.0" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.8.4" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.0" />

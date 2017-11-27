@@ -9,9 +9,9 @@ import java.sql.ResultSet;
 
 public class LoginServices {
     public static LoginServices loginServices = null;
-    private static String dburl = "jdbc:mysql://kunet.kingston.ac.uk/db_k1559378";
-    private static String user = "k1559378";
-    private static String password = "Pass1234Ben";
+    private static String dburl = "jdbc:postgresql://localhost:5432/waid";
+    private static String user = "postgres";
+    private static String password = "postgres";
 
     private LoginServices(){
 
@@ -27,15 +27,18 @@ public class LoginServices {
     private String getEmailSaltSQL(String sql, String email){
         String hashCode = "";
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, email);
             ResultSet rs = st.executeQuery();
+            con.close();
             while (rs.next()){
                 hashCode = rs.getString("salt");
             }
-        }catch (Exception ex){}
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         return hashCode;
     }
 
@@ -48,14 +51,17 @@ public class LoginServices {
     private Boolean findUserSql(String sql, String email, String passwordHash){
         Boolean found = false;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, email);
             st.setString(2, passwordHash);
             ResultSet rs = st.executeQuery();
             found = (rs.next()) ? true : false;
-        }catch (Exception ex){}
+            con.close();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
 
         return found;
     }
@@ -77,7 +83,7 @@ public class LoginServices {
     private Admin getUserDetailsSQL(String sql, String email){
         Admin admin = new Admin();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, email);
@@ -87,7 +93,9 @@ public class LoginServices {
                 admin.setLast_name(rs.getString("last_name"));
                 admin.setEmail(rs.getString("email"));
             }
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
 
         return admin;

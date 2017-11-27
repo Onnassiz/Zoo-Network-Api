@@ -13,9 +13,6 @@ import java.util.Random;
 
 public class AdminServices {
     public static AdminServices adminServices = null;
-    private static String dburl = "jdbc:mysql://kunet.kingston.ac.uk/db_k1559378";
-    private static String user = "k1559378";
-    private static String password = "Pass1234Ben";
 
     private AdminServices(){
 
@@ -61,18 +58,17 @@ public class AdminServices {
 
     //Create admin
     public void createAdmin(Admin admin) throws java.security.NoSuchAlgorithmException{
-        String sql = "INSERT INTO admin VALUE (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO admin(email, first_name, last_name, password, salt) VALUES (?, ?, ?, ?, ?)";
 
         String salt = getSaltString();
         String password_hash = getPasswordHash(admin.getPassword(), salt);
 
         JSONArray params = new JSONArray();
-        params.add(0, null);
-        params.add(1, admin.getEmail());
-        params.add(2, admin.getFirst_name());
-        params.add(3, admin.getLast_name());
-        params.add(4, password_hash);
-        params.add(5, salt);
+        params.add(0, admin.getEmail());
+        params.add(1, admin.getFirst_name());
+        params.add(2, admin.getLast_name());
+        params.add(3, password_hash);
+        params.add(4, salt);
         Util.getInstance().createRecordSQL(sql, params);
     }
 

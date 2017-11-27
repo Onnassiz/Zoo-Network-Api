@@ -12,9 +12,9 @@ import java.util.ArrayList;
 
 public class AnimalServices {
     public static AnimalServices animalServices = null;
-    private static String dburl = "jdbc:mysql://kunet.kingston.ac.uk/db_k1559378";
-    private static String user = "k1559378";
-    private static String password = "Pass1234Ben";
+    private static String dburl = "jdbc:postgresql://localhost:5432/waid";
+    private static String user = "postgres";
+    private static String password = "postgres";
 
     private AnimalServices(){
 
@@ -36,17 +36,16 @@ public class AnimalServices {
 
     //Create New Animal
     public void addAnimal(Animal animal){
-        String sql = "INSERT INTO animals VALUE (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO animals(common_name, animal_class, family, animal_order, species, genus, description) VALUES (?, ?, ?, ?, ?, ?, ?)";
         JSONArray params = new JSONArray();
 
-        params.add(0, null);
-        params.add(1, animal.getCommon_name());
-        params.add(2, animal.getAnimal_class());
-        params.add(3, animal.getFamily());
-        params.add(4, animal.getOrder());
-        params.add(5, animal.getSpecies());
-        params.add(6, animal.getGenus());
-        params.add(7, animal.getDescription());
+        params.add(0, animal.getCommon_name());
+        params.add(1, animal.getAnimal_class());
+        params.add(2, animal.getFamily());
+        params.add(3, animal.getOrder());
+        params.add(4, animal.getSpecies());
+        params.add(5, animal.getGenus());
+        params.add(6, animal.getDescription());
         Util.getInstance().createRecordSQL(sql, params);
     }
 
@@ -75,14 +74,16 @@ public class AnimalServices {
     private ArrayList<Animal> fetchAllAnimalsSQL(String sql){
         ArrayList<Animal> animals = new ArrayList();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()){
                 animals.add(mapRSToAnimals(rs));
             }
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return animals;
     }
@@ -107,11 +108,10 @@ public class AnimalServices {
 
     //Save animal Image link
     public void saveAnimalImageLink(JSONObject jsonParams){
-        String sql = "insert into animal_images value (?, ?, ?)";
+        String sql = "insert into animal_images(animal_id, link) values (?, ?)";
         JSONArray params = new JSONArray();
-        params.add(0, null);
-        params.add(1, getAnimalId(jsonParams.get("common_name").toString()));
-        params.add(2, jsonParams.get("image_url").toString());
+        params.add(0, getAnimalId(jsonParams.get("common_name").toString()));
+        params.add(1, jsonParams.get("image_url").toString());
         Util.getInstance().createRecordSQL(sql, params);
     }
 
@@ -150,28 +150,30 @@ public class AnimalServices {
     private ArrayList<AnimalImageLink> fetchAnimalImageLinksSQL(String sql){
         ArrayList<AnimalImageLink> animalImageLinks = new ArrayList();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()){
                 animalImageLinks.add(mapRsToAnimalLink(rs));
             }
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return animalImageLinks;
     }
 
     //Retrieve the image links of a particular animal
     public ArrayList<AnimalImageLink> fetchAnimalImageLinks(){
-        String sql = "select animal_images.link as 'link', animals.common_name as 'common_name' from animals inner join animal_images on animal_images.animal_id = animals.id";
+        String sql = "select animal_images.link, animals.common_name from animals inner join animal_images on animal_images.animal_id = animals.id";
         return fetchAnimalImageLinksSQL(sql);
     }
 
     private ArrayList<AnimalZoo> fetchAnimalZoosSQL(String sql, String common_name){
         ArrayList<AnimalZoo> animalZoos = new ArrayList();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, common_name);
@@ -179,14 +181,16 @@ public class AnimalServices {
             while (rs.next()){
                 animalZoos.add(mapRsToAnimalZoos(rs));
             }
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return animalZoos;
     }
 
     //Get the zoos of a particular animal
     public ArrayList<AnimalZoo> fetchAnimalZoos(String common_name){
-        String sql = "SELECT animals.common_name AS 'common_name', zoos.zoo_name AS 'zoo_name', animals_in_zoos.animal_count as 'animal_count' FROM zoos INNER JOIN animals_in_zoos ON zoos.id = animals_in_zoos.zoo_id INNER JOIN animals ON animals_in_zoos.animal_id = animals.id WHERE animals.common_name = ?";
+        String sql = "SELECT animals.common_name, zoos.zoo_name, animals_in_zoos.animal_count FROM zoos INNER JOIN animals_in_zoos ON zoos.id = animals_in_zoos.zoo_id INNER JOIN animals ON animals_in_zoos.animal_id = animals.id WHERE animals.common_name = ?";
         return fetchAnimalZoosSQL(sql, common_name);
     }
 
@@ -201,14 +205,16 @@ public class AnimalServices {
     private Boolean checkTagExistsSQL(String sql, int animal_id, int zoo_id){
         Boolean exists = false;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setInt(1, animal_id);
             st.setInt(2, zoo_id);
             ResultSet rs = st.executeQuery();
             exists = (rs.next()) ? true : false;
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return exists;
     }
@@ -225,14 +231,13 @@ public class AnimalServices {
         int animal_id = getAnimalId(jsonParams.get("common_name").toString());
         int animal_count = Integer.parseInt(jsonParams.get("animal_count").toString());
 
-        String sql = "insert into animals_in_zoos values (?, ?, ?, ?)";
+        String sql = "insert into animals_in_zoos (animal_id, zoo_id, animal_count) values (?, ?, ?)";
         String sql_update = "update animals_in_zoos set animal_count = ? where animal_id = ? and zoo_id = ?";
         JSONArray params = new JSONArray();
         JSONArray params_update = new JSONArray();
-        params.add(0, null);
-        params.add(1, animal_id);
-        params.add(2, zoo_id);
-        params.add(3, animal_count);
+        params.add(0, animal_id);
+        params.add(1, zoo_id);
+        params.add(2, animal_count);
 
         params_update.add(0, animal_count);
         params_update.add(1, animal_id);
@@ -288,7 +293,7 @@ public class AnimalServices {
     public ArrayList<Animal> searchAnimalByKeySQL(String sql, String key){
         ArrayList<Animal> animals = new ArrayList();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             for (int i = 0; i < 6; i++){
@@ -298,7 +303,9 @@ public class AnimalServices {
             while (rs.next()){
                 animals.add(mapRSToAnimals(rs));
             }
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return animals;
     }

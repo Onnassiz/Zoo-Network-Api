@@ -2,17 +2,14 @@ package com.models;
 
 import org.json.simple.JSONArray;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 
 public class Util {
     public static Util util = null;
-    private static String dburl = "jdbc:mysql://kunet.kingston.ac.uk/db_k1559378";
-    private static String user = "k1559378";
-    private static String password = "Pass1234Ben";
-    private static String exceptionMessage = null;
+
+    private static String dburl = "jdbc:postgresql://localhost:5432/waid";
+    private static String user = "postgres";
+    private static String password = "postgres";
 
     private Util(){
 
@@ -28,7 +25,7 @@ public class Util {
     //Create Record
     public void createRecordSQL(String sql, JSONArray params){
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
 
@@ -37,7 +34,9 @@ public class Util {
             }
 
             st.executeUpdate();
+            st.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return;
     }
@@ -45,13 +44,14 @@ public class Util {
     //Delete Record
     public void deleteRecordSQL(String sql, String whereValue){
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setObject(1, whereValue);
             st.executeUpdate();
+            st.close();
         }catch (Exception ex){
-            exceptionMessage = ex.getMessage();
+            ex.printStackTrace();
         }
     }
 
@@ -59,7 +59,7 @@ public class Util {
     public int getIdSQL(String sql, String whereValue){
         int id = 0;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setObject(1, whereValue);
@@ -67,8 +67,9 @@ public class Util {
             while (rs.next()){
                 id = rs.getInt("id");
             }
+            st.close();
         }catch (Exception ex){
-            exceptionMessage = ex.getMessage();
+            ex.printStackTrace();
         }
         return id;
     }
@@ -78,13 +79,15 @@ public class Util {
     public Boolean fieldExistsSQL(String sql, String field){
         Boolean isUnique = true;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, field);
             ResultSet rs = st.executeQuery();
             isUnique = (rs.next()) ? true : false;
+            st.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return isUnique;
     }

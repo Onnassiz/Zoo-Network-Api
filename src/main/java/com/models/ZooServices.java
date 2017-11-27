@@ -11,9 +11,9 @@ import java.util.ArrayList;
 
 public class ZooServices {
     public static ZooServices zooServices = null;
-    private static String dburl = "jdbc:mysql://kunet.kingston.ac.uk/db_k1559378";
-    private static String user = "k1559378";
-    private static String password = "Pass1234Ben";
+    private static String dburl = "jdbc:postgresql://localhost:5432/waid";
+    private static String user = "postgres";
+    private static String password = "postgres";
 
     private ZooServices(){
 
@@ -35,16 +35,15 @@ public class ZooServices {
 
     //Create New Zoo
     public void addZoo(Zoo zoo){
-        String sql = "INSERT INTO zoos VALUE (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO zoos(zoo_name, website, house_number, street, county, postcode) VALUES (?, ?, ?, ?, ?, ?)";
         JSONArray params = new JSONArray();
 
-        params.add(0, null);
-        params.add(1, zoo.getZoo_name());
-        params.add(2, zoo.getWebsite());
-        params.add(3, zoo.getHouse_number());
-        params.add(4, zoo.getStreet());
-        params.add(5, zoo.getCounty());
-        params.add(6, zoo.getPostcode());
+        params.add(0, zoo.getZoo_name());
+        params.add(1, zoo.getWebsite());
+        params.add(2, zoo.getHouse_number());
+        params.add(3, zoo.getStreet());
+        params.add(4, zoo.getCounty());
+        params.add(5, zoo.getPostcode());
         Util.getInstance().createRecordSQL(sql, params);
     }
 
@@ -72,10 +71,11 @@ public class ZooServices {
     private ArrayList<Zoo> fetchZoosSQL(String sql){
         ArrayList<Zoo> zoos = new ArrayList();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
+            con.close();
             while (rs.next()){
                 zoos.add(mapRSToZoo(rs));
             }
@@ -104,11 +104,10 @@ public class ZooServices {
 
     //Save Zoo image link
     public void saveZooImageLink(JSONObject jsonParams){
-        String sql = "insert into zoo_images value (?, ?, ?)";
+        String sql = "insert into zoo_images (zoo_id, link) values (?, ?)";
         JSONArray params = new JSONArray();
-        params.add(0, null);
-        params.add(1, getZooId(jsonParams.get("zoo_name").toString()));
-        params.add(2, jsonParams.get("image_url").toString());
+        params.add(0, getZooId(jsonParams.get("zoo_name").toString()));
+        params.add(1, jsonParams.get("image_url").toString());
 
         Util.getInstance().createRecordSQL(sql, params);
     }
@@ -132,21 +131,23 @@ public class ZooServices {
     private ArrayList<ZooImageLink> fetchZooLinksSQL(String sql){
         ArrayList<ZooImageLink> zooImageLinks = new ArrayList();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()){
                 zooImageLinks.add(mapRsToZooLink(rs));
             }
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return zooImageLinks;
     }
 
     //Fetch Zoo Image link
     public ArrayList<ZooImageLink> fetchZooImageLinks(){
-        String sql = "select zoo_images.link as 'link', zoos.zoo_name as 'zoo_name' from zoos inner join zoo_images on zoo_images.zoo_id = zoos.id";
+        String sql = "select zoo_images.link, zoos.zoo_name from zoos inner join zoo_images on zoo_images.zoo_id = zoos.id";
         return fetchZooLinksSQL(sql);
     }
 
@@ -154,12 +155,14 @@ public class ZooServices {
     public void deleteZooImagesSQL(String sql, int id){
         try {
             int field = id;
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setObject(1, field);
             st.executeUpdate();
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
@@ -189,7 +192,7 @@ public class ZooServices {
     private ArrayList<AnimalZoo> fetchZooAnimalsSQL(String sql, String zoo_name){
         ArrayList<AnimalZoo> animalZoos = new ArrayList();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection(dburl, user, password);
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, zoo_name);
@@ -197,14 +200,16 @@ public class ZooServices {
             while (rs.next()){
                 animalZoos.add(mapRsToAnimalZoo(rs));
             }
+            con.close();
         }catch (Exception ex){
+            ex.printStackTrace();
         }
         return animalZoos;
     }
 
     //Fetch all animal in a particular zoo
     public ArrayList<AnimalZoo> fetchZooAnimals(String zoo_name){
-        String sql = "SELECT animals.common_name AS 'common_name', zoos.zoo_name AS 'zoo_name', animals_in_zoos.animal_count as 'animal_count' FROM animals INNER JOIN animals_in_zoos ON animals.id = animals_in_zoos.animal_id INNER JOIN zoos ON animals_in_zoos.zoo_id = zoos.id WHERE zoos.zoo_name = ?";
+        String sql = "SELECT animals.common_name, zoos.zoo_name, animals_in_zoos.animal_count FROM animals INNER JOIN animals_in_zoos ON animals.id = animals_in_zoos.animal_id INNER JOIN zoos ON animals_in_zoos.zoo_id = zoos.id WHERE zoos.zoo_name = ?";
         return fetchZooAnimalsSQL(sql, zoo_name);
     }
 }
