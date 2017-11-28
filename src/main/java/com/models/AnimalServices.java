@@ -12,9 +12,6 @@ import java.util.ArrayList;
 
 public class AnimalServices {
     public static AnimalServices animalServices = null;
-    private static String dburl = "jdbc:postgresql://localhost:5432/waid";
-    private static String user = "postgres";
-    private static String password = "postgres";
 
     private AnimalServices(){
 
@@ -74,8 +71,7 @@ public class AnimalServices {
     private ArrayList<Animal> fetchAllAnimalsSQL(String sql){
         ArrayList<Animal> animals = new ArrayList();
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()){
@@ -150,8 +146,7 @@ public class AnimalServices {
     private ArrayList<AnimalImageLink> fetchAnimalImageLinksSQL(String sql){
         ArrayList<AnimalImageLink> animalImageLinks = new ArrayList();
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()){
@@ -173,8 +168,7 @@ public class AnimalServices {
     private ArrayList<AnimalZoo> fetchAnimalZoosSQL(String sql, String common_name){
         ArrayList<AnimalZoo> animalZoos = new ArrayList();
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, common_name);
             ResultSet rs = st.executeQuery();
@@ -205,8 +199,7 @@ public class AnimalServices {
     private Boolean checkTagExistsSQL(String sql, int animal_id, int zoo_id){
         Boolean exists = false;
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setInt(1, animal_id);
             st.setInt(2, zoo_id);
@@ -293,8 +286,7 @@ public class AnimalServices {
     public ArrayList<Animal> searchAnimalByKeySQL(String sql, String key){
         ArrayList<Animal> animals = new ArrayList();
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             for (int i = 0; i < 6; i++){
                 st.setString(i + 1, key);

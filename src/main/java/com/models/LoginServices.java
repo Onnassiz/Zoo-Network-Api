@@ -9,9 +9,6 @@ import java.sql.ResultSet;
 
 public class LoginServices {
     public static LoginServices loginServices = null;
-    private static String dburl = "jdbc:postgresql://localhost:5432/waid";
-    private static String user = "postgres";
-    private static String password = "postgres";
 
     private LoginServices(){
 
@@ -27,8 +24,7 @@ public class LoginServices {
     private String getEmailSaltSQL(String sql, String email){
         String hashCode = "";
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, email);
             ResultSet rs = st.executeQuery();
@@ -51,8 +47,7 @@ public class LoginServices {
     private Boolean findUserSql(String sql, String email, String passwordHash){
         Boolean found = false;
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, email);
             st.setString(2, passwordHash);
@@ -83,8 +78,7 @@ public class LoginServices {
     private Admin getUserDetailsSQL(String sql, String email){
         Admin admin = new Admin();
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, email);
             ResultSet rs = st.executeQuery();
@@ -97,7 +91,6 @@ public class LoginServices {
         }catch (Exception ex){
             ex.printStackTrace();
         }
-
         return admin;
     }
 

@@ -11,9 +11,6 @@ import java.util.ArrayList;
 
 public class ZooServices {
     public static ZooServices zooServices = null;
-    private static String dburl = "jdbc:postgresql://localhost:5432/waid";
-    private static String user = "postgres";
-    private static String password = "postgres";
 
     private ZooServices(){
 
@@ -71,8 +68,7 @@ public class ZooServices {
     private ArrayList<Zoo> fetchZoosSQL(String sql){
         ArrayList<Zoo> zoos = new ArrayList();
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             con.close();
@@ -131,8 +127,7 @@ public class ZooServices {
     private ArrayList<ZooImageLink> fetchZooLinksSQL(String sql){
         ArrayList<ZooImageLink> zooImageLinks = new ArrayList();
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()){
@@ -155,8 +150,7 @@ public class ZooServices {
     public void deleteZooImagesSQL(String sql, int id){
         try {
             int field = id;
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setObject(1, field);
             st.executeUpdate();
@@ -192,8 +186,7 @@ public class ZooServices {
     private ArrayList<AnimalZoo> fetchZooAnimalsSQL(String sql, String zoo_name){
         ArrayList<AnimalZoo> animalZoos = new ArrayList();
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = Util.getInstance().getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, zoo_name);
             ResultSet rs = st.executeQuery();

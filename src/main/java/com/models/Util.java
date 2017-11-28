@@ -7,9 +7,14 @@ import java.sql.*;
 public class Util {
     public static Util util = null;
 
+    private static String Driver = "org.postgresql.Driver";
     private static String dburl = "jdbc:postgresql://localhost:5432/waid";
     private static String user = "postgres";
     private static String password = "postgres";
+
+    private static String staging_dburl = "jdbc:postgresql://ec2-184-73-247-240.compute-1.amazonaws.com:5432/db5pa4n8m8qv8p?sslmode=require";
+    private static String staging_user = "txunxodsofubqv";
+    private static String staging_password = "807914c0e993ef1ae904a87fa10784477fcf99e1441a3327855827ced0b40650";
 
     private Util(){
 
@@ -22,11 +27,23 @@ public class Util {
         return util;
     }
 
+    public Connection getConnection() throws SQLException {
+        try {
+            Class.forName(Driver);
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Where is your PostgreSQL JDBC Driver? "
+                    + "Include in your library path!");
+            return null;
+        }
+        Connection conn = DriverManager.getConnection(staging_dburl, staging_user, staging_password);
+        return conn;
+    }
+
+
     //Create Record
     public void createRecordSQL(String sql, JSONArray params){
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = getConnection();
             PreparedStatement st = con.prepareStatement(sql);
 
             for (int i = 0; i < params.size(); i++){
@@ -44,8 +61,7 @@ public class Util {
     //Delete Record
     public void deleteRecordSQL(String sql, String whereValue){
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setObject(1, whereValue);
             st.executeUpdate();
@@ -59,8 +75,7 @@ public class Util {
     public int getIdSQL(String sql, String whereValue){
         int id = 0;
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setObject(1, whereValue);
             ResultSet rs = st.executeQuery();
@@ -79,8 +94,7 @@ public class Util {
     public Boolean fieldExistsSQL(String sql, String field){
         Boolean isUnique = true;
         try {
-            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(dburl, user, password);
+            Connection con = getConnection();
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, field);
             ResultSet rs = st.executeQuery();

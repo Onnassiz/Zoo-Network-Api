@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar target/dependency/jetty-runner.jar --port $PORT target/*.war
+web: java $JAVA_OPTS -jar webapp-runner.jar ${WEBAPP_RUNNER_OPTS} --port $PORT ./waid2-server.war
