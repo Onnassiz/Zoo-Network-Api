@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar webapp-runner.jar ${WEBAPP_RUNNER_OPTS} --port $PORT ./waid2-server.war
+web: java -jar target/waid2-server-1.0-SNAPSHOT.war
