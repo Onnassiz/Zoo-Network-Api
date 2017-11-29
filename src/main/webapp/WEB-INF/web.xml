@@ -10,6 +10,10 @@
             <param-name>jersey.config.server.provider.packages</param-name>
             <param-value>com.controllers</param-value>
         </init-param>
+        <init-param>
+            <param-name>javax.ws.rs.container.ContainerResponseFilter</param-name>
+            <param-value>com.controllers.CORSFilter</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>waid2-server</servlet-name>
