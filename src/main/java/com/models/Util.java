@@ -12,9 +12,9 @@ public class Util {
     private static String user = "postgres";
     private static String password = "postgres";
 
-    private static String staging_dburl = "jdbc:postgresql://ec2-184-73-247-240.compute-1.amazonaws.com:5432/db5pa4n8m8qv8p?sslmode=require";
-    private static String staging_user = "txunxodsofubqv";
-    private static String staging_password = "807914c0e993ef1ae904a87fa10784477fcf99e1441a3327855827ced0b40650";
+    private static String staging_dburl = "jdbc:postgresql://ec2-54-243-185-123.compute-1.amazonaws.com:5432/d32mr83d7okce3?sslmode=require";
+    private static String staging_user = "poedbnjtgrsvip";
+    private static String staging_password = "2ea846cbc7e275f64f91e6f5c737bd71a75993a0f1975f1f811620720d417e52";
 
     private Util(){
 
