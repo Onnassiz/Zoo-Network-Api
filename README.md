@@ -5,7 +5,7 @@ This piece of work is a report that highlight the pre and post evaluation proces
 <h3>Technologies</h3>
 <ul>
   <li>Java</li>
-  <li>JSX API</li>
+  <li>JARS API</li>
   <li>Marven Package Manager</li>
   <li>MySQL</li>
 </ul>
